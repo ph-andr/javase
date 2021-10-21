@@ -73,7 +73,7 @@ public class Principal extends JFrame {
 		btnRelátorio.setBounds(48, 51, 128, 128);
 		contentPane.add(btnRelátorio);
 		
-		JButton btnTécnico = new JButton("New button");
+		JButton btnTécnico = new JButton("");
 		btnTécnico.setToolTipText("Suporte t\u00E9cnico");
 		btnTécnico.setBorder(null);
 		btnTécnico.setBackground(new Color(192, 192, 192));
