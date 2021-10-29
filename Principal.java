@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -18,10 +19,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import model.DAO;
+import java.awt.Cursor;
+
 @SuppressWarnings("serial")
 public class Principal extends JFrame {
 	private JPanel contentPane;
 	private JLabel lblData;
+	private JLabel lblStatus;
 
 	/**
 	 * Launch the application.
@@ -47,6 +52,7 @@ public class Principal extends JFrame {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				setarData();
+				status();
 			}
 			
 			
@@ -62,6 +68,7 @@ public class Principal extends JFrame {
 		contentPane.setLayout(null);
 		
 		JButton btnRelátorio = new JButton("");
+		btnRelátorio.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnRelátorio.setToolTipText("Relat\u00F3rio");
 		btnRelátorio.setBorder(null);
 		btnRelátorio.setBackground(new Color(192, 192, 192));
@@ -74,18 +81,22 @@ public class Principal extends JFrame {
 		contentPane.add(btnRelátorio);
 		
 		JButton btnTécnico = new JButton("");
+		btnTécnico.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnTécnico.setToolTipText("Suporte t\u00E9cnico");
 		btnTécnico.setBorder(null);
 		btnTécnico.setBackground(new Color(192, 192, 192));
 		btnTécnico.setIcon(new ImageIcon(Principal.class.getResource("/icones/tecnico.png")));
 		btnTécnico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Clientes cliente = new Clientes();
+				cliente.setVisible(true);
 			}
 		});
 		btnTécnico.setBounds(48, 268, 128, 128);
 		contentPane.add(btnTécnico);
 		
 		JButton btnCliente = new JButton("");
+		btnCliente.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnCliente.setToolTipText("Cliente");
 		btnCliente.setBackground(new Color(192, 192, 192));
 		btnCliente.setBorder(null);
@@ -98,6 +109,7 @@ public class Principal extends JFrame {
 		contentPane.add(btnCliente);
 		
 		JButton btnSobre = new JButton("");
+		btnSobre.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnSobre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Sobre sobre = new Sobre();
@@ -118,11 +130,11 @@ public class Principal extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
-		lblNewLabel.setIcon(new ImageIcon(Principal.class.getResource("/icones/dbof.png")));
-		lblNewLabel.setBounds(10, 0, 32, 31);
-		panel.add(lblNewLabel);
+		lblStatus = new JLabel("");
+		lblStatus.setVerticalAlignment(SwingConstants.TOP);
+		lblStatus.setIcon(new ImageIcon(Principal.class.getResource("/icones/dbof.png")));
+		lblStatus.setBounds(10, 0, 32, 31);
+		panel.add(lblStatus);
 		
 		lblData = new JLabel("");
 		lblData.setForeground(Color.WHITE);
@@ -131,6 +143,7 @@ public class Principal extends JFrame {
 		panel.add(lblData);
 		
 		JButton btnNewButton = new JButton("");
+		btnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnNewButton.setToolTipText("Conserto");
 		btnNewButton.setBackground(new Color(192, 192, 192));
 		btnNewButton.setBorder(null);
@@ -159,5 +172,30 @@ public class Principal extends JFrame {
 		DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL);
 		lblData.setText(formatador.format(dataLabel));
 		
+	}//fim do construtor
+	
+	/**
+	 * Método responsável pela exibição do status de conexão
+	 */
+	private void status() {
+		//criar u objeto de nome DAO para acessar o método na classe DAO
+		DAO dao = new DAO();
+		try {
+			//abrir a conexão com o banco
+			Connection con = dao.conectar();		
+			System.out.println("Banco Conectado hahaha");
+			//mudando o icone do rodape no caso do banco de dados estar disponível
+			if (con == null) {
+				lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/dbof.png")));
+			} else {
+				lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/dbon.png")));
+			}
+			
+			
+			//IMPORTANTE! sempre encerrar conexão
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 }

@@ -35,6 +35,7 @@ public class Sobre extends JDialog {
 	 * Create the dialog.
 	 */
 	public Sobre() {
+		getContentPane().setBackground(new Color(192, 192, 192));
 		setTitle("PressStart");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Sobre.class.getResource("/icones/logo.png")));
 		setBounds(100, 100, 464, 317);
@@ -63,7 +64,7 @@ public class Sobre extends JDialog {
 		}
 		{
 			JLabel lblNewLabel = new JLabel("Autor: Pedro Henrique Andrade Silva e Daniel Dias");
-			lblNewLabel.setBounds(10, 63, 257, 14);
+			lblNewLabel.setBounds(10, 63, 365, 14);
 			getContentPane().add(lblNewLabel);
 		}
 		{

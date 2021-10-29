@@ -6,14 +6,21 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import model.DAO;
+import net.proteanit.sql.DbUtils;
+
 import java.awt.Toolkit;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Iterator;
 
 import javax.swing.JLabel;
@@ -29,12 +36,15 @@ import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 @SuppressWarnings("serial")
 public class Clientes extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textPesquisar;
+	private JTextField txtPesquisar;
 	private JTextField textID;
 	private JTextField textNome;
 	private JTextField textFone;
@@ -65,6 +75,8 @@ public class Clientes extends JDialog {
 	 * Create the dialog.
 	 */
 	public Clientes() {
+		setTitle("Press Start - Clientes");
+		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Clientes.class.getResource("/icones/logo.png")));
 		setBounds(100, 100, 790, 511);
 		getContentPane().setLayout(null);
@@ -74,10 +86,16 @@ public class Clientes extends JDialog {
 		getContentPane().add(contentPanel);
 		contentPanel.setLayout(null);
 		{
-			textPesquisar = new JTextField();
-			textPesquisar.setBounds(10, 25, 140, 20);
-			contentPanel.add(textPesquisar);
-			textPesquisar.setColumns(10);
+			txtPesquisar = new JTextField();
+			txtPesquisar.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					pesquisarCliente();
+				}
+			});
+			txtPesquisar.setBounds(10, 25, 140, 20);
+			contentPanel.add(txtPesquisar);
+			txtPesquisar.setColumns(10);
 		}
 		{
 			JLabel lblNewLabel = new JLabel("");
@@ -94,6 +112,14 @@ public class Clientes extends JDialog {
 		JDesktopPane desktopPane = new JDesktopPane();
 		desktopPane.setBounds(20, 56, 754, 117);
 		contentPanel.add(desktopPane);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(0, 0, 754, 117);
+		desktopPane.add(scrollPane_1);
+		
+		table = new JTable();
+		scrollPane_1.setViewportView(table);
+		
 		
 		textID = new JTextField();
 		textID.setBounds(44, 221, 57, 20);
@@ -284,5 +310,33 @@ public class Clientes extends JDialog {
 			System.out.println(e);
 		}
 	}
+	
+	//Criando um objeto para acessar a classe DAO
+			DAO dao = new DAO();
+			private JTable table;
+			
+			
+			
+			private void pesquisarCliente() {
+				// ? -> Parâmetro pesquisar a letra que o usuario quer"
+				String read = "select idcliente as ID, nome as Cliente, email as Email, fone as Telefone from clientes where nome like ?";
+				
+				//Try é para importar 
+				try {
+					//abrir a conexao com o banco
+					Connection con = dao.conectar();
+					//preparar a query(instrucao sql) para pesquisar no banco
+					PreparedStatement pst = con.prepareStatement(read);
+					//substituir o parametro(?) Atencao ao % para completar a query
+					//1 -> parâmetro (?)
+					pst.setString(1, txtPesquisar.getText() + "%");
+					//Executar a query e obter os dados do banco de dados (resultado)
+					ResultSet rs = pst.executeQuery();
+					//popular(preencher) a tabela com os dados do banco
+					table.setModel(DbUtils.resultSetToTableModel(rs));
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
 }
 
